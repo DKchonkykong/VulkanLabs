@@ -115,17 +115,32 @@ const std::vector<Vertex> Quad_vertices = {
 };
 
 //first and second trianlge for square shape
-//drawing cube now 
 const std::vector<uint16_t> Quad_indices = {
-    //front
-    0, 1, 2, 2, 3, 0,
-    //back
-	4, 5, 6, 6, 7, 4,
-    //left side
-    0,3,7,7,4,0,
-    //right
-	1,5,6,6,2,1
+    //drawing cube now this is using triangles to draw
 
+ //   //front
+ //   0, 1, 2, 2, 3, 0,
+ //   //back
+	//4, 5, 6, 6, 7, 4,
+ //   //left side
+ //   0,3,7,7,4,0,
+ //   //right
+	//1,5,6,6,2,1
+    
+    //drawing index triangle strips
+    //0xFFFF tells vulkan to stop reading this line and move to the next 
+    //front
+    0, 1, 3,2, 0xFFFF,
+    //back
+    4,5, 7, 6, 0xFFFF,
+    //left
+    0, 4, 3, 7, 0xFFFF,
+    //right
+    1,5, 2, 6, 0xFFFF,
+    //bottom
+    0, 1, 4, 5, 0xFFFF,
+    //top
+    3,2,7,6
 };
 
 std::vector<Vertex> vertices;
@@ -602,8 +617,8 @@ void HelloTriangleApplication::createGraphicsPipeline() {
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; // render tris = triangle list, render points = point list, render lines = line list
-    inputAssembly.primitiveRestartEnable = VK_FALSE; 
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP; // render tris = triangle list, render points = point list, render lines = line list
+    inputAssembly.primitiveRestartEnable = VK_TRUE; //need to turn this from false to true (relates to 0xFFFF thing)
 
     VkProvokingVertexModeEXT provokingVertexMode = VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT;
 
@@ -616,7 +631,7 @@ void HelloTriangleApplication::createGraphicsPipeline() {
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizer.depthClampEnable = VK_FALSE;
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_LINE; // wireframe mode = line, regular mode = fill
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // wireframe mode = line, regular mode = fill
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace =  VK_FRONT_FACE_COUNTER_CLOCKWISE;
@@ -969,7 +984,7 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
     //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 24, 1, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines)
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines Task 6 stuff). We're back to rendering cube normally
     
     vkCmdEndRendering(commandBuffer);
 
