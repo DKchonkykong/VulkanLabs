@@ -977,14 +977,13 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     VkRect2D scissor{};
     scissor.extent = swapChainExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
     VkBuffer vertexBuffers[] = { vertexBuffer };
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
     //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines Task 6 stuff). We're back to rendering cube normally
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 5, 0, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines Task 6 stuff). We're back to rendering cube normally, renders 5 cubes now
     
     vkCmdEndRendering(commandBuffer);
 
