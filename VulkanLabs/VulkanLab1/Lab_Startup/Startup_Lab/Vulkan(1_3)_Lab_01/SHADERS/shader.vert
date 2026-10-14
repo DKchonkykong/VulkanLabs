@@ -1,22 +1,24 @@
 #version 450
 
 layout(binding = 0) uniform UniformBufferObject {
-    mat4 model;
     mat4 view;
     mat4 proj;
 } ubo;
+
+layout(push_constant) uniform PushConstants {
+        mat4 model;
+    } pushConstants;
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inColor;
 
 layout(location = 0) out vec3 fragColor;
 
+
 void main() {
-    vec3 offset = vec3(gl_InstanceIndex * 1.5 - 3.0, 0.0, 0.0);
 
-    vec4 worldPosition = ubo.model * vec4(inPosition, 1.0);
-    worldPosition.xyz += offset;
+   
 
-    gl_Position = ubo.proj * ubo.view * ubo.model * worldPosition;
+    gl_Position = ubo.proj * ubo.view * pushConstants.model * vec4(inPosition, 1.0);
     fragColor = inColor;
 }
