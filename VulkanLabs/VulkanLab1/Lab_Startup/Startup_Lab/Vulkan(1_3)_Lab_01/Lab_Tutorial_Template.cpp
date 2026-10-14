@@ -602,7 +602,7 @@ void HelloTriangleApplication::createGraphicsPipeline() {
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_POINT_LIST; // render tris = triangle list, render points = point list
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; // render tris = triangle list, render points = point list, render lines = line list
     inputAssembly.primitiveRestartEnable = VK_FALSE; 
 
     VkProvokingVertexModeEXT provokingVertexMode = VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT;
@@ -968,8 +968,8 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-    vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
-    //vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now (uint32)
+    //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 24, 1, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines)
     
     vkCmdEndRendering(commandBuffer);
 
