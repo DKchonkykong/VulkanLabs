@@ -100,12 +100,14 @@ const std::vector<Vertex> Quad_vertices = {
 
 
 
-    //second triangle
+    //second triangle (square)
     //position   //front       //colour
     {{-0.5f, -0.5f, 0.5f}, {1.0f, 1.0f, 0.5f} }, //4
     {{0.5f, -0.5f, 0.5f}, {0.0f,1.0f,0.5f}}, //5
     {{0.5f, 0.5f, 0.5f}, {0.0f,0.0f,1.0f}}, //6
     {{-0.5f, 0.5f, 0.5f}, {1.0f,1.0f,1.0f}}, //7
+
+
 
     
 
@@ -966,8 +968,8 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-    /*vkCmdDraw(commandBuffer, 4, 1, 1, 1 );*/ //should now be able to draw two triangles aka 6 vertices
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now 
+    //vkCmdDraw(commandBuffer, 6, 1, 1, 1 ); //should now be able to draw two triangles aka 6 vertices
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now (uint32)
     
     vkCmdEndRendering(commandBuffer);
 
