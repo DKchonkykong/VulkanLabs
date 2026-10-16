@@ -82,76 +82,45 @@ struct Vertex {
 };
 
 struct UniformBufferObject {
-    //alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
 };
-//used to pass model matrix to vert shader for each model (e.g., 2 cubes)
-struct ModelPushConstant {
-    glm::mat4 model;
-};
 
-//square
-const std::vector<Vertex> Quad_vertices = {
-    //first triangle
-	//position      //back     //colour
-    {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}}, //0
-    {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}}, //1
-    {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}, //2
-    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}}, //3
-    
+void createGrid(int width, int depth, std::vector<Vertex>& outVertices, std::vector<uint32_t>& outIndices)
+{
+	//vertices
+	for (int z = 0; z <= depth; ++z) {
+		for (int x = 0; x <= width; ++x) {
+			Vertex vertex{};
+			vertex.pos = glm::vec3(static_cast<float>(x), 0.0f, static_cast<float>(z));
+			vertex.color = glm::vec3(1.0f, 1.0f, 1.0f);
+			outVertices.push_back(vertex);
+		}
+	}
 
+    //indices
+    for (int z = 0; z < depth; ++z) {
+		for (int x = 0; x < width; ++x) 
+        //two triangles
+        {
+			uint32_t topLeft = z * (width + 1) + x;
+			uint32_t topRight = topLeft + 1;
+			uint32_t bottomLeft = (z + 1) * (width + 1) + x;
+			uint32_t bottomRight = bottomLeft + 1;
+			outIndices.push_back(topLeft);
+			outIndices.push_back(bottomLeft);
+			outIndices.push_back(topRight);
+			outIndices.push_back(topRight);
+			outIndices.push_back(bottomLeft);
+			outIndices.push_back(bottomRight);
+		}
+    }
 
-
-    //second triangle (square)
-    //position   //front       //colour
-    {{-0.5f, -0.5f, 0.5f}, {1.0f, 1.0f, 0.5f} }, //4
-    {{0.5f, -0.5f, 0.5f}, {0.0f,1.0f,0.5f}}, //5
-    {{0.5f, 0.5f, 0.5f}, {0.0f,0.0f,1.0f}}, //6
-    {{-0.5f, 0.5f, 0.5f}, {1.0f,1.0f,1.0f}}, //7
-
-
-
-    
-
-
-};
-
-//first and second trianlge for square shape
-const std::vector<uint16_t> Quad_indices = {
-    //drawing cube now this is using triangles to draw
-
- //   //front
- //   0, 1, 2, 2, 3, 0,
- //   //back
-	//4, 5, 6, 6, 7, 4,
- //   //left side
- //   0,3,7,7,4,0,
- //   //right
-	//1,5,6,6,2,1
-    
-    //drawing index triangle strips
-    //0xFFFF tells vulkan to stop reading this line and move to the next 
-    //front
-    0, 1, 3,2, 0xFFFF,
-    //back
-    4,5, 7, 6, 0xFFFF,
-    //left
-    0, 4, 3, 7, 0xFFFF,
-    //right
-    1,5, 2, 6, 0xFFFF,
-    //bottom
-    0, 1, 4, 5, 0xFFFF,
-    //top
-    3,2,7,6
-};
+}
 
 std::vector<Vertex> vertices;
-std::vector<uint16_t> indices;
-void loadModel() {
-    vertices = Quad_vertices;
-    indices = Quad_indices;
-}
+std::vector<uint32_t> indices;
 
 // --- Vulkan Debug Messenger ---
 
@@ -314,8 +283,7 @@ void HelloTriangleApplication::initVulkan() {
     createGraphicsPipeline();
     createCommandPool();
 
-    loadModel();
-
+	createGrid(10, 10, vertices, indices); //creates a 10x10 grid
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
@@ -620,8 +588,8 @@ void HelloTriangleApplication::createGraphicsPipeline() {
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP; // render tris = triangle list, render points = point list, render lines = line list
-    inputAssembly.primitiveRestartEnable = VK_TRUE; //need to turn this from false to true (relates to 0xFFFF thing)
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; // render tris = triangle list, render points = point list, render lines = line list
+    inputAssembly.primitiveRestartEnable = VK_FALSE; //need to turn this from false to true (relates to 0xFFFF thing)
 
     VkProvokingVertexModeEXT provokingVertexMode = VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT;
 
@@ -629,11 +597,7 @@ void HelloTriangleApplication::createGraphicsPipeline() {
     viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
     viewportState.viewportCount = 1;
     viewportState.scissorCount = 1;
-    //needed for drawing multiple objects 
-	VkPushConstantRange pushConstantRange{};
-	pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	pushConstantRange.offset = 0;
-	pushConstantRange.size = sizeof(ModelPushConstant);
+   
 
     VkPipelineRasterizationStateCreateInfo rasterizer{};
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -671,7 +635,6 @@ void HelloTriangleApplication::createGraphicsPipeline() {
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 	pipelineLayoutInfo.pushConstantRangeCount = 1;
-	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -990,21 +953,12 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     VkBuffer vertexBuffers[] = { vertexBuffer };
     VkDeviceSize offsets[] = { 0 };
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32); //changed it from 16 to 32
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-    //draw first cube
-    ModelPushConstant pushUBO{};
-    pushUBO.model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPushConstant), &pushUBO);
-
-    //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines Task 6 stuff). We're back to rendering cube normally, renders 5 cubes now
     
-	//draw second cube
-    pushUBO.model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPushConstant), &pushUBO);
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //should draw cube now (uint32), 24 objects (should render 12 lines of cube, only renders 9 lines Task 6 stuff). We're back to rendering cube normally, renders 5 cubes now
-
+    //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //need to draw grid line now 
+    
 
     vkCmdEndRendering(commandBuffer);
 
