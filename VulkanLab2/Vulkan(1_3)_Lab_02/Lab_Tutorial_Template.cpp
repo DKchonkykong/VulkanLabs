@@ -93,8 +93,10 @@ void createGrid(int width, int depth, std::vector<Vertex>& outVertices, std::vec
 	for (int z = 0; z <= depth; ++z) {
 		for (int x = 0; x <= width; ++x) {
 			Vertex vertex{};
-			vertex.pos = glm::vec3(static_cast<float>(x), 0.0f, static_cast<float>(z));
-			vertex.color = glm::vec3(1.0f, 1.0f, 1.0f);
+            float xPos = static_cast<float>(x) - width / 2.0f;
+            float zPos = static_cast<float>(z) - depth / 2.0f;
+			vertex.pos = glm::vec3(xPos, 0.0f, zPos);
+			vertex.color = glm::vec3(1.0f, 0.0f, 0.0f);
 			outVertices.push_back(vertex);
 		}
 	}
@@ -118,6 +120,7 @@ void createGrid(int width, int depth, std::vector<Vertex>& outVertices, std::vec
     }
 
 }
+
 
 std::vector<Vertex> vertices;
 std::vector<uint32_t> indices;
@@ -588,7 +591,7 @@ void HelloTriangleApplication::createGraphicsPipeline() {
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST; // render tris = triangle list, render points = point list, render lines = line list
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // render tris = triangle list, render points = point list, render lines = line list
     inputAssembly.primitiveRestartEnable = VK_FALSE; //need to turn this from false to true (relates to 0xFFFF thing)
 
     VkProvokingVertexModeEXT provokingVertexMode = VK_PROVOKING_VERTEX_MODE_FIRST_VERTEX_EXT;
@@ -634,8 +637,9 @@ void HelloTriangleApplication::createGraphicsPipeline() {
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-	pipelineLayoutInfo.pushConstantRangeCount = 1;
-
+	pipelineLayoutInfo.pushConstantRangeCount = 0;
+	pipelineLayoutInfo.pPushConstantRanges = nullptr;
+    
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create pipeline layout!");
     }
@@ -990,7 +994,9 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage) {
 
 
     UniformBufferObject ubo{};
-    ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.model = glm::mat4(0.2f);
+    //camera
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
