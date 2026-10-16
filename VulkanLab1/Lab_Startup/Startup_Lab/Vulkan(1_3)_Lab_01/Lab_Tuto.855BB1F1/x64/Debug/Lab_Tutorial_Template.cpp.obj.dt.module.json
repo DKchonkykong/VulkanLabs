@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "Lab_Tuto.855BB1F1\\x64\\Debug\\Lab_Tutorial_Template.obj",
+            "outputs": [
+                "Lab_Tuto.855BB1F1\\x64\\Debug\\Lab_Tutorial_Template.cpp.obj.dt.module.json",
+                "Lab_Tuto.855BB1F1\\x64\\Debug\\Lab_Tutorial_Template.cpp.obj.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}
