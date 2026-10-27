@@ -1,17 +1,17 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\",
+  "WorkspaceRootPath": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Lab_Tutorial_Template.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Lab_Tutorial_Template.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|solutionrelative:Lab_Tutorial_Template.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Shaders\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "AbsoluteMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Shaders\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|solutionrelative:Shaders\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Shaders\\shader.frag||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "AbsoluteMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Shaders\\shader.frag||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{855BB1F1-C11F-9561-0EA6-A7583A00AEAB}|Lab_Tutorial_Template.vcxproj|solutionrelative:Shaders\\shader.frag||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
@@ -37,44 +37,41 @@
               "RelativeToolTip": "..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Microsoft\\VC\\v180\\Microsoft.CppCommon.targets",
               "ViewState": "AgIAAN8AAAAAAAAAAAAawP0AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2026-10-14T12:32:05.239Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-14T12:32:05.239Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "shader.frag",
-              "DocumentMoniker": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.frag",
+              "DocumentMoniker": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.frag",
               "RelativeDocumentMoniker": "SHADERS\\shader.frag",
-              "ToolTip": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.frag",
+              "ToolTip": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.frag",
               "RelativeToolTip": "SHADERS\\shader.frag",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-10-14T11:38:21.306Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-14T11:38:21.306Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "shader.vert",
-              "DocumentMoniker": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.vert",
+              "DocumentMoniker": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.vert",
               "RelativeDocumentMoniker": "SHADERS\\shader.vert",
-              "ToolTip": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.vert",
+              "ToolTip": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\SHADERS\\shader.vert",
               "RelativeToolTip": "SHADERS\\shader.vert",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-10-14T11:38:10.434Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-14T11:38:10.434Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Lab_Tutorial_Template.cpp",
-              "DocumentMoniker": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Lab_Tutorial_Template.cpp",
+              "DocumentMoniker": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Lab_Tutorial_Template.cpp",
               "RelativeDocumentMoniker": "Lab_Tutorial_Template.cpp",
-              "ToolTip": "C:\\Users\\806395\\OneDrive - hull.ac.uk\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Lab_Tutorial_Template.cpp",
+              "ToolTip": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab2\\Vulkan(1_3)_Lab_02\\Lab_Tutorial_Template.cpp",
               "RelativeToolTip": "Lab_Tutorial_Template.cpp",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAAAFMAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2026-10-09T13:25:07.742Z",
               "EditorCaption": ""
