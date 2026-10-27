@@ -22,6 +22,7 @@
 #include <array>
 #include <optional>
 #include <set>
+#include <cmath>
 
 // --- Configuration ---
 const uint32_t WIDTH = 800;
@@ -95,7 +96,9 @@ void createGrid(int width, int depth, std::vector<Vertex>& outVertices, std::vec
 			Vertex vertex{};
             float xPos = static_cast<float>(x) - width / 2.0f;
             float zPos = static_cast<float>(z) - depth / 2.0f;
-			vertex.pos = glm::vec3(xPos, 0.0f, zPos);
+			//Q2 instead of leaving it 0.0 we have ypos through the sin xpos and cos zpos
+            float yPos = std::sin(xPos) * std::cos(zPos);
+            vertex.pos = glm::vec3(xPos, yPos, zPos);
 			vertex.color = glm::vec3(1.0f, 0.0f, 0.0f);
 			outVertices.push_back(vertex);
 		}
@@ -994,9 +997,9 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage) {
 
 
     UniformBufferObject ubo{};
-    ubo.model = glm::mat4(0.2f);
+    ubo.model = glm::mat4(1.2f); //this was supposed to affect scale of model
     //camera
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.view = glm::lookAt(glm::vec3(0.0f, 9.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
 
