@@ -1,14 +1,13 @@
 //==================================================
 // Vulkan ver 1.3 based
 //====================================================
-
+#include "GeometryGenerator.h"
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -23,6 +22,7 @@
 #include <optional>
 #include <set>
 #include <cmath>
+
 
 // --- Configuration ---
 const uint32_t WIDTH = 800;
@@ -60,27 +60,7 @@ struct SwapChainSupportDetails {
     std::vector<VkPresentModeKHR> presentModes;
 };
 
-// --- Vertex Data ---
 
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 color;
-
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription{};
-        bindingDescription.binding = 0;
-        bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-        return bindingDescription;
-    }
-
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
-        attributeDescriptions[0] = { 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos) };
-        attributeDescriptions[1] = { 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) };
-        return attributeDescriptions;
-    }
-};
 
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
@@ -88,45 +68,9 @@ struct UniformBufferObject {
     alignas(16) glm::mat4 proj;
 };
 
-void createGrid(int width, int depth, std::vector<Vertex>& outVertices, std::vector<uint32_t>& outIndices)
-{
-	//vertices
-	for (int z = 0; z <= depth; ++z) {
-		for (int x = 0; x <= width; ++x) {
-			Vertex vertex{};
-            float xPos = static_cast<float>(x) - width / 2.0f;
-            float zPos = static_cast<float>(z) - depth / 2.0f;
-			//Q2 instead of leaving it 0.0 we have ypos through the sin xpos and cos zpos
-            float yPos = std::sin(xPos) * std::cos(zPos);
-            vertex.pos = glm::vec3(xPos, yPos, zPos);
-			vertex.color = glm::vec3(1.0f, 0.0f, 0.0f);
-			outVertices.push_back(vertex);
-		}
-	}
-
-    //indices
-    for (int z = 0; z < depth; ++z) {
-		for (int x = 0; x < width; ++x) 
-        //two triangles
-        {
-			uint32_t topLeft = z * (width + 1) + x;
-			uint32_t topRight = topLeft + 1;
-			uint32_t bottomLeft = (z + 1) * (width + 1) + x;
-			uint32_t bottomRight = bottomLeft + 1;
-			outIndices.push_back(topLeft);
-			outIndices.push_back(bottomLeft);
-			outIndices.push_back(topRight);
-			outIndices.push_back(topRight);
-			outIndices.push_back(bottomLeft);
-			outIndices.push_back(bottomRight);
-		}
-    }
-
-}
-
-
 std::vector<Vertex> vertices;
 std::vector<uint32_t> indices;
+
 
 // --- Vulkan Debug Messenger ---
 
@@ -201,10 +145,11 @@ private:
 
     // --- Main Flow ---
     void initWindow();
+    // Generate geometry
     void initVulkan();
+
     void mainLoop();
     void cleanup();
-
     // --- Vulkan Initialization Steps ---
     void createInstance();
     void setupDebugMessenger();
@@ -216,7 +161,6 @@ private:
     void createDescriptorSetLayout();
     void createGraphicsPipeline();
     void createCommandPool();
-
     void createVertexBuffer();
     void createIndexBuffer();
     void createUniformBuffers();
@@ -288,8 +232,98 @@ void HelloTriangleApplication::initVulkan() {
     createDescriptorSetLayout();
     createGraphicsPipeline();
     createCommandPool();
+    vertices.clear();
+    indices.clear();
+    auto grid = Q4ReuseGeo::CreateGrid(10, 10); //creates a 10x10 grid
 
-	createGrid(10, 10, vertices, indices); //creates a 10x10 grid
+    vertices.insert(vertices.end(), grid.vertices.begin(), grid.vertices.end());
+    indices.insert(indices.end(), grid.indices.begin(), grid.indices.end());
+
+
+    //creates reusable geometry for cylinder
+    //auto cylinder =
+    //    Q4ReuseGeo::CreateCylinder(
+    //        1.0f,
+    //        2.0f,
+    //        32
+    //    );
+
+    ////offset + movement
+    //for (auto& vertex : cylinder.vertices)
+    //{
+    //    vertex.pos.x += 2.0f;
+    //    vertex.pos.y += 1.0f;
+    //}
+    //uint32_t cylinderOffset =
+    //    static_cast<uint32_t>(vertices.size());
+
+    //vertices.insert(
+    //    vertices.end(),
+    //    cylinder.vertices.begin(),
+    //    cylinder.vertices.end()
+    //);
+
+    //for (uint32_t index : cylinder.indices)
+    //{
+    //    indices.push_back(
+    //        index + cylinderOffset
+    //    );
+    //}
+
+    ////sphere
+
+    //auto sphere = Q4ReuseGeo::CreateSphere(1.0f, 16);
+    //for (auto& v : sphere.vertices)
+    //{
+    //    v.pos.x += -2.0f;
+    //    v.pos.y += 1.0f;
+    //    v.pos.z += 0.0f;
+    //}
+    //uint32_t sphereOffset =
+    //    static_cast<uint32_t>(vertices.size());
+
+    //vertices.insert(
+    //    vertices.end(),
+    //    sphere.vertices.begin(),
+    //    sphere.vertices.end()
+    //);
+
+    //for (uint32_t index : sphere.indices)
+    //{
+    //    indices.push_back(
+    //        index + sphereOffset
+    //    );
+    //}
+
+    //loading model
+    auto teapot =
+        Q4ReuseGeo::CreateModel(
+            "Teapot.obj"
+        );
+
+    for (auto& v : teapot.vertices)
+    {
+        v.pos *= 0.5f;
+        v.pos.z -= 2.0f;
+    }
+
+    uint32_t teapotOffset =
+        static_cast<uint32_t>(
+            vertices.size()
+            );
+    vertices.insert(
+        vertices.end(),
+        teapot.vertices.begin(),
+        teapot.vertices.end()
+    );
+
+    for (uint32_t index : teapot.indices)
+    {
+        indices.push_back(
+            index + teapotOffset
+        );
+    }
+
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
@@ -713,8 +747,7 @@ void HelloTriangleApplication::createIndexBuffer() {
 
     void* data;
     vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-    memcpy(data, indices.data(), (size_t)bufferSize);
-    vkUnmapMemory(device, stagingBufferMemory);
+    memcpy(data, indices.data(), static_cast<size_t>(bufferSize));    vkUnmapMemory(device, stagingBufferMemory);
 
     createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
     copyBuffer(stagingBuffer, indexBuffer, bufferSize);
@@ -964,8 +997,8 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
     
     //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //need to draw grid line now 
-    
+    vkCmdDrawIndexed(
+        commandBuffer,static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     vkCmdEndRendering(commandBuffer);
 
@@ -999,8 +1032,8 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage) {
     UniformBufferObject ubo{};
     ubo.model = glm::mat4(1.2f); //this was supposed to affect scale of model
     //camera
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 9.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+    ubo.view = glm::lookAt(glm::vec3(4.0f, 3.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 100.0f);
     ubo.proj[1][1] *= -1;
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));

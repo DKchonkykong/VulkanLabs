@@ -1,0 +1,7 @@
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\x64\Debug\assimp-vc145-mtd.dll
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\x64\Debug\poly2tri.dll
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\x64\Debug\minizipd.dll
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\x64\Debug\zd.dll
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\x64\Debug\kubazip.dll
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\x64\Debug\pugixml.dll
+C:\Users\adria\Documents\GitHub\VulkanLabs\VulkanLab2\Vulkan(1_3)_Lab_02\Lab_Tuto.855BB1F1\x64\Debug\Lab_Tuto.19EAF1E7.Up2Date
