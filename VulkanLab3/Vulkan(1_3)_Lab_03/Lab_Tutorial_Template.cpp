@@ -82,51 +82,46 @@ struct Vertex {
     }
 };
 
+
+//in order to have multiple different objects with their unique transformations
+
+struct ModelPushConstant
+{
+    glm::mat4 model;
+};
+
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
 };
 
-void createGrid(int width, int depth, std::vector<Vertex>& outVertices, std::vector<uint32_t>& outIndices)
-{
-	//vertices
-	for (int z = 0; z <= depth; ++z) {
-		for (int x = 0; x <= width; ++x) {
-			Vertex vertex{};
-            float xPos = static_cast<float>(x) - width / 2.0f;
-            float zPos = static_cast<float>(z) - depth / 2.0f;
-			//Q2 instead of leaving it 0.0 we have ypos through the sin xpos and cos zpos
-            float yPos = std::sin(xPos) * std::cos(zPos);
-            vertex.pos = glm::vec3(xPos, yPos, zPos);
-			vertex.color = glm::vec3(1.0f, 0.0f, 0.0f);
-			outVertices.push_back(vertex);
-		}
-	}
 
-    //indices
-    for (int z = 0; z < depth; ++z) {
-		for (int x = 0; x < width; ++x) 
-        //two triangles
-        {
-			uint32_t topLeft = z * (width + 1) + x;
-			uint32_t topRight = topLeft + 1;
-			uint32_t bottomLeft = (z + 1) * (width + 1) + x;
-			uint32_t bottomRight = bottomLeft + 1;
-			outIndices.push_back(topLeft);
-			outIndices.push_back(bottomLeft);
-			outIndices.push_back(topRight);
-			outIndices.push_back(topRight);
-			outIndices.push_back(bottomLeft);
-			outIndices.push_back(bottomRight);
-		}
-    }
+//hard coded cube: verticies
 
-}
+std::vector<Vertex> vertices = {
+	{ { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f } },
+	{ { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f } },
+	{ { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f } },
+	{ { -0.5f,  0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f } },
+	{ { -0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } },
+	{ { 0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } },
+	{ { 0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } },
+	{ { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } }
+};
 
 
-std::vector<Vertex> vertices;
-std::vector<uint32_t> indices;
+//cube indicies
+
+std::vector<uint32_t> indices = {
+	0, 1, 2, 2, 3, 0,
+	4, 5, 6, 6, 7, 4,
+	0, 1, 5, 5, 4, 0,
+	2, 3, 7, 7, 6, 2,
+	0, 3, 7, 7, 4, 0,
+	1, 2, 6, 6, 5, 1
+};
+
 
 // --- Vulkan Debug Messenger ---
 
@@ -214,6 +209,8 @@ private:
     void createSwapChain();
     void createImageViews();
     void createDescriptorSetLayout();
+
+
     void createGraphicsPipeline();
     void createCommandPool();
 
@@ -286,10 +283,12 @@ void HelloTriangleApplication::initVulkan() {
     createSwapChain();
     createImageViews();
     createDescriptorSetLayout();
+
+    
+
     createGraphicsPipeline();
     createCommandPool();
 
-	createGrid(10, 10, vertices, indices); //creates a 10x10 grid
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
@@ -609,7 +608,7 @@ void HelloTriangleApplication::createGraphicsPipeline() {
     rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
     rasterizer.depthClampEnable = VK_FALSE;
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
-    rasterizer.polygonMode = VK_POLYGON_MODE_LINE; // wireframe mode = line, regular mode = fill
+    rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // wireframe mode = line, regular mode = fill
     rasterizer.lineWidth = 1.0f;
     rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace =  VK_FRONT_FACE_COUNTER_CLOCKWISE;
@@ -636,12 +635,18 @@ void HelloTriangleApplication::createGraphicsPipeline() {
     dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
     dynamicState.pDynamicStates = dynamicStates.data();
 
+    VkPushConstantRange pushConstantRange{};
+    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    pushConstantRange.offset = 0;
+    pushConstantRange.size = sizeof(ModelPushConstant);
+
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-	pipelineLayoutInfo.pushConstantRangeCount = 0;
-	pipelineLayoutInfo.pPushConstantRanges = nullptr;
+	pipelineLayoutInfo.pushConstantRangeCount = 1;
+	pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
     
     if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create pipeline layout!");
@@ -963,9 +968,83 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32); //changed it from 16 to 32
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
     
-    //vkCmdDraw(commandBuffer, 8, 1, 0, 0 ); //should now be able to draw two triangles aka 6 vertices,  to render cube draw 8 verticies
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0); //need to draw grid line now 
+    static auto startTime =
+        std::chrono::high_resolution_clock::now();
+
+    auto currentTime =
+        std::chrono::high_resolution_clock::now();
+
+    float time =
+        std::chrono::duration<float>(
+            currentTime - startTime
+        ).count();
+
+    ModelPushConstant push{};
+
+    // first object: sun
+	glm::mat4 sunModel = glm::mat4(1.0f);
+
+    sunModel = glm::scale(
+        sunModel, glm::vec3(1.2f)
+    );
+		push.model = sunModel;
+
+    //draw firts obj
+    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPushConstant), &push);
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+
+    // second object: earth
+    glm::mat4 earthModel = glm::mat4(1.0f);
+
+    earthModel = glm::rotate(
+        earthModel,time,
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    earthModel = glm::translate(
+        earthModel,
+        glm::vec3(2.0f, 0.0f, 0.0f)
+    );
+
+    earthModel = glm::rotate(
+        earthModel, time * 2.0f,
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    earthModel = glm::scale(
+        earthModel,
+        glm::vec3(0.5f)
+    );
+
+	push.model = sunModel * earthModel;
+
+	vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPushConstant), &push);
+	vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
     
+	//third object: moon
+
+    glm::mat4 moonModel = glm::mat4(1.0f);
+
+    moonModel = glm::rotate(
+        moonModel, time * 3.0f,
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    moonModel = glm::translate(
+        moonModel,
+        glm::vec3(1.2f, 0.0f, 0.0f)
+    );
+
+    moonModel = glm::scale(
+        moonModel,
+        glm::vec3(0.25f)
+    );
+
+	push.model = sunModel * earthModel * moonModel;
+
+	vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPushConstant), &push);
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
     vkCmdEndRendering(commandBuffer);
 
@@ -990,22 +1069,34 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     }
 }
 
-void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage) {
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    float time = std::chrono::duration<float>(currentTime - startTime).count();
-
-
+void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
+{
     UniformBufferObject ubo{};
-    ubo.model = glm::mat4(1.2f); //this was supposed to affect scale of model
+    
+        ubo.model = glm::mat4(1.0f);
+    //model
+    ubo.view = glm::lookAt(
+        glm::vec3(4.0f, 3.0f, 4.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f)
+    );
     //camera
-    ubo.view = glm::lookAt(glm::vec3(0.0f, 9.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float)swapChainExtent.height, 0.1f, 10.0f);
+    ubo.proj = glm::perspective(
+        glm::radians(45.0f),
+        swapChainExtent.width /
+        static_cast<float>(swapChainExtent.height),
+        0.1f,
+        10.0f
+    );
+
     ubo.proj[1][1] *= -1;
 
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+    memcpy(
+        uniformBuffersMapped[currentImage],
+        &ubo,
+        sizeof(ubo)
+    );
 }
-
 // --- Helper Implementations ---
 
 void HelloTriangleApplication::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
