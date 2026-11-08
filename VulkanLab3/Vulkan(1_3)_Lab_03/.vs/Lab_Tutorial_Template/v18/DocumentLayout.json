@@ -35,7 +35,7 @@
               "RelativeDocumentMoniker": "SHADERS\\shader.vert",
               "ToolTip": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab3\\Vulkan(1_3)_Lab_03\\SHADERS\\shader.vert",
               "RelativeToolTip": "SHADERS\\shader.vert",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADYAAAAAAAAAAADwv1IAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2026-10-14T11:38:10.434Z",
               "EditorCaption": ""
@@ -48,7 +48,7 @@
               "RelativeDocumentMoniker": "Lab_Tutorial_Template.cpp",
               "ToolTip": "C:\\Users\\adria\\Documents\\GitHub\\VulkanLabs\\VulkanLab3\\Vulkan(1_3)_Lab_03\\Lab_Tutorial_Template.cpp",
               "RelativeToolTip": "Lab_Tutorial_Template.cpp",
-              "ViewState": "AgIAAE4AAAAAAAAAAAAwwF4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAAAGUAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2026-10-09T13:25:07.742Z",
               "EditorCaption": ""
@@ -63,8 +63,7 @@
               "RelativeToolTip": "..\\..\\..\\..\\..\\..\\..\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\MSBuild\\Microsoft\\VC\\v180\\Microsoft.CppCommon.targets",
               "ViewState": "AgIAAO4AAAAAAAAAAAAhwP0AAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2026-10-14T12:32:05.239Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-14T12:32:05.239Z"
             },
             {
               "$type": "Document",

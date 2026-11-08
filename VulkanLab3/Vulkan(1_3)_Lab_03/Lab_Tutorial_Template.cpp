@@ -89,11 +89,16 @@ struct ModelPushConstant
 {
     glm::mat4 model;
 };
-
+//remplacing glm::view and having it called in shader
 struct UniformBufferObject {
-    alignas(16) glm::mat4 model;
-    alignas(16) glm::mat4 view;
-    alignas(16) glm::mat4 proj;
+    alignas(16) glm::vec3 eye;
+    alignas(16) glm::vec3 target;
+    alignas(16) glm::vec3 up;
+	alignas(16) glm::vec4 perspective;
+    float fov;
+    float aspect;
+    float nearPlane;
+    float farPlane;    
 };
 
 
@@ -989,6 +994,11 @@ void HelloTriangleApplication::recordCommandBuffer(VkCommandBuffer commandBuffer
     );
 		push.model = sunModel;
 
+        //vertex shader stuff
+
+        
+
+
     //draw firts obj
     vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(ModelPushConstant), &push);
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
@@ -1073,24 +1083,20 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
 {
     UniformBufferObject ubo{};
     
-        ubo.model = glm::mat4(1.0f);
     //model
-    ubo.view = glm::lookAt(
-        glm::vec3(4.0f, 3.0f, 4.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f)
-    );
-    //camera
-    ubo.proj = glm::perspective(
-        glm::radians(45.0f),
-        swapChainExtent.width /
-        static_cast<float>(swapChainExtent.height),
-        0.1f,
-        10.0f
-    );
+        ubo.eye = glm::vec3(4.0f, 3.0f, 4.0f);
+		ubo.target = glm::vec3(0.0f, 0.0f, 0.0f);
+        ubo.up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-    ubo.proj[1][1] *= -1;
 
+        ubo.perspective = glm::vec4(
+            glm::radians(45.0f),
+            swapChainExtent.width /
+            static_cast<float>(swapChainExtent.height),
+            0.1f,
+            10.0f);
+     
+        
     memcpy(
         uniformBuffersMapped[currentImage],
         &ubo,
