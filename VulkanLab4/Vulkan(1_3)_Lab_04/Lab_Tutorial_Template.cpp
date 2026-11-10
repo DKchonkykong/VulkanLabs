@@ -65,6 +65,7 @@ struct SwapChainSupportDetails {
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 color;
+    glm::vec3 normal; 
 
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
@@ -73,53 +74,102 @@ struct Vertex {
         bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
         return bindingDescription;
     }
-
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+    //normal attribute description
+    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
         attributeDescriptions[0] = { 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos) };
         attributeDescriptions[1] = { 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) };
+        attributeDescriptions[2] = { 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) };
         return attributeDescriptions;
     }
+	
+    
 };
 
-
-//in order to have multiple different objects with their unique transformations
-
-struct ModelPushConstant
-{
-    glm::mat4 model;
+struct ModelPushConstant {
+	glm::mat4 model;
 };
 
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
+	alignas(16) glm::vec3 lightPos;
+	alignas(16) glm::vec3 eyePos;
 };
 
 
 //hard coded cube: verticies
 
 std::vector<Vertex> vertices = {
-	{ { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f } },
-	{ { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f } },
-	{ { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f } },
-	{ { -0.5f,  0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f } },
-	{ { -0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } },
-	{ { 0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } },
-	{ { 0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } },
-	{ { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f } }
+
+    //front face
+
+// front face +z
+    { { -0.5f, -0.5f,  0.5f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } },
+    { { 0.5f, -0.5f,  0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } },
+    { { 0.5f,  0.5f,  0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } },
+
+    { { -0.5f, -0.5f,  0.5f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, 1.0f } },
+    { { 0.5f,  0.5f,  0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } },
+    { { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } },
+
+    // back face -z
+    { { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } },
+    { { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } },
+    { { -0.5f,  0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } },
+
+    { { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f, -1.0f } },
+    { { -0.5f,  0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } },
+    { { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 0.0f, -1.0f } },
+
+    // left face -x
+    { { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ -1.0f, 0.0f, 0.0f } },
+    { { -0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ -1.0f, 0.0f, 0.0f } },
+    { { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ -1.0f, 0.0f, 0.0f } },
+
+    { { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ -1.0f, 0.0f, 0.0f } },
+    { { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ -1.0f, 0.0f, 0.0f } },
+    { { -0.5f,  0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f },{ -1.0f, 0.0f, 0.0f } },
+
+    // right face +x
+    { { 0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f, 0.0f } },
+    { { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 1.0f, 0.0f, 0.0f } },
+    { { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 0.0f, 0.0f } },
+
+    { { 0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f, 0.0f } },
+    { { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 0.0f, 0.0f } },
+    { { 0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f, 0.0f } },
+
+    // top face +y
+    { { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f, 0.0f } },
+    { { 0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f, 0.0f } },
+    { { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f, 0.0f } },
+
+    { { -0.5f,  0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f, 0.0f } },
+    { { 0.5f,  0.5f, -0.5f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f, 0.0f } },
+    { { -0.5f,  0.5f, -0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f, 0.0f } },
+
+    // Bottom face -y
+    { { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, -1.0f, 0.0f } },
+    { { 0.5f, -0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, -1.0f, 0.0f } },
+    { { 0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, -1.0f, 0.0f } },
+
+    { { -0.5f, -0.5f, -0.5f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, -1.0f, 0.0f } },
+    { { 0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, -1.0f, 0.0f } },
+    { { -0.5f, -0.5f,  0.5f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, -1.0f, 0.0f } }
 };
 
 
 //cube indicies
 
 std::vector<uint32_t> indices = {
-	0, 1, 2, 2, 3, 0,
-	4, 5, 6, 6, 7, 4,
-	0, 1, 5, 5, 4, 0,
-	2, 3, 7, 7, 6, 2,
-	0, 3, 7, 7, 4, 0,
-	1, 2, 6, 6, 5, 1
+	 0,1,2,3,4,5,
+    6,7,8,9,10,11,
+    12,13,14,15,16,17,
+    18,19,20,21,22,23,
+    24,25,26,27,28,29,
+    30,31,32,33,34,35
 };
 
 
@@ -548,7 +598,7 @@ void HelloTriangleApplication::createDescriptorSetLayout() {
     uboLayoutBinding.binding = 0;
     uboLayoutBinding.descriptorCount = 1;
     uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT; //for both vertex and frag
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -1074,7 +1124,8 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
     UniformBufferObject ubo{};
     
         ubo.model = glm::mat4(1.0f);
-    //model
+    
+        //model
     ubo.view = glm::lookAt(
         glm::vec3(4.0f, 3.0f, 4.0f),
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -1091,10 +1142,16 @@ void HelloTriangleApplication::updateUniformBuffer(uint32_t currentImage)
 
     ubo.proj[1][1] *= -1;
 
+    //lighting positions modifed it now 
+
+	ubo.lightPos = glm::vec3(2.0f, 3.0f, 1.0f);
+	ubo.eyePos = glm::vec3(4.0f, 3.0f, 4.0f);
+
     memcpy(
         uniformBuffersMapped[currentImage],
         &ubo,
         sizeof(ubo)
+        
     );
 }
 // --- Helper Implementations ---
@@ -1355,8 +1412,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL HelloTriangleApplication::debugCallback(
     return VK_FALSE;
 }
 
-
 int main() {
+	
     HelloTriangleApplication app;
     try {
         app.run();
@@ -1367,3 +1424,4 @@ int main() {
     }
     return EXIT_SUCCESS;
 }
+
